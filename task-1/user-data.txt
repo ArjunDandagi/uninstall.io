@@ -1,0 +1,10 @@
+#!/bin/bash
+sudo su
+yum update -y
+mkdir data
+mount /dev/xvdb /data
+yum install httpd -y
+cd /var/www/html
+export server=$(curl http://169.254.169.254/latest/meta-data/public-ipv4)
+echo "<h1>Hello from $server </h1>" > index.html
+service httpd start
