@@ -1,8 +1,10 @@
 #!/bin/bash
 sudo su
 yum update -y
+mkfs -t ext4 /dev/xvdg
 mkdir data
-mount /dev/xvdb /data
+mount /dev/xvdg /data
+echo /dev/xvdg  /data ext4 defaults,nofail 0 2 >> /etc/fstab
 yum install httpd -y
 cd /var/www/html
 export server=$(curl http://169.254.169.254/latest/meta-data/public-ipv4)

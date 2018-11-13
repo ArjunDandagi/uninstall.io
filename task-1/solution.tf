@@ -24,9 +24,13 @@ resource "aws_instance" "web_servers" {
   ami                         = "${data.aws_ami.amazon_linux.id}"
   associate_public_ip_address = true
   availability_zone = "ap-south-1b"
-
-  key_name  = "elb"
   user_data = "${file("user-data.txt")}"
+  ebs_block_device {
+    device_name           = "/dev/sdg"
+    volume_type           = "gp2"
+    volume_size           = 100
+    delete_on_termination = false
+  }
 
   tags {
     Name = "web-server"
@@ -41,20 +45,20 @@ resource "aws_elb" "web_server_lb" {
     lb_port = 80
     lb_protocol = "http"
   }
-  availability_zones = ["ap-south-1a","ap-south-1b"]
-  #depends_on = ["aws_instance.web_servers"]
+  availability_zones = ["ap-south-1b"]
+  depends_on = ["aws_instance.web_servers"]
 
 }
 
 resource "aws_elb_attachment" "attach_ec2_to_elb" {
   elb = "${aws_elb.web_server_lb.id}"
   #instance = "${format("$${aws_instance.web_servers.%d.id}",count.index)}"
-  instance = "${aws_instance.web_servers.0.id}"
+  instance = "${element(concat(aws_instance.web_servers.*.id, list("")), 1)}"
   depends_on = ["aws_instance.web_servers"]
 }
 resource "aws_elb_attachment" "attach_ec2_to_elb_second_instance" {
   elb = "${aws_elb.web_server_lb.id}"
-  instance = "${aws_instance.web_servers.1.id}"
+  instance = "${element(concat(aws_instance.web_servers.*.id, list("")), 0)}"
   depends_on = ["aws_instance.web_servers"]
 }
 
@@ -65,8 +69,9 @@ resource "aws_ebs_volume" "data-disk" {
 
 resource "aws_volume_attachment" "attach_to_data" {
   device_name = "/dev/xvdb"
-  instance_id = "${aws_instance.web_servers.1.id}"
+  instance_id = "${element(concat(aws_instance.web_servers.*.id, list("")), 1)}"
   volume_id = "${aws_ebs_volume.data-disk.id}"
+  depends_on = ["aws_instance.web_servers"]
 }
 
 
@@ -75,5 +80,7 @@ output "aws_lb" {
 }
 
 output "data-disk_attached_to_this_server" {
-  value = "${aws_instance.web_servers.1.public_ip}"
+  //value = "${aws_instance.web_servers.1.public_ip}"
+  value = "${element(concat(aws_instance.web_servers.*.public_ip, list("")), 1)}"
+
 }
