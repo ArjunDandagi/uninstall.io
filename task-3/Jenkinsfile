@@ -1,0 +1,17 @@
+pipeline {
+    agent any
+    stages{
+        stage('Build'){
+            steps {
+                echo "mail is configured"
+            }
+            post {
+                success {
+                    echo 'Now sending email.'
+                    emailext body: 'your  build was succesful',to: 'dandagi.arjun95@gmail.com', subject: 'build passed'
+                    
+                }
+            }
+        }
+    }
+}
