@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: result
+spec:
+  type: Loadbalancer
+  ports:
+  - name: "result-service"
+    port: 6739
+    targetPort: 80
+  selector:
+    app: result

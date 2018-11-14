@@ -1,0 +1,16 @@
+apiVersion: extensions/v1beta1
+kind: Pod
+metadata:
+  name: result
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: result
+    spec:
+      containers:
+      - image: dockersamples/examplevotingapp_result:before
+        name: result
+      - image : arjundandagi/linux_tweet_app
+        name: linux_tweet_app
