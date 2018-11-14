@@ -1,5 +1,5 @@
 apiVersion: extensions/v1beta1
-kind: Pod
+kind: Deployment
 metadata:
   name: result
 spec:
@@ -13,4 +13,4 @@ spec:
       - image: dockersamples/examplevotingapp_result:before
         name: result
       - image : arjundandagi/linux_tweet_app
-        name: linux_tweet_app
+        name: tweetapp

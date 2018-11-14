@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: result
 spec:
-  type: Loadbalancer
+  type: LoadBalancer
   ports:
   - name: "result-service"
     port: 6739
